@@ -35,27 +35,29 @@ All settings are customizable in the configuration files.
 ## For PS-Dispatch
 1. Add the following code to your ps-dispatch/client/alerts.lua
 
-local function ParkingmeterRobbery()
-    local coords = GetEntityCoords(cache.ped)
-    local dispatchData = {
-        message = locale('parkinmeterrobbery'),
-        codeName = 'parkinmeterrobbery',
-        code = '10-10',
-        icon = 'fa-solid fa-square-parking',
-        priority = 2,
-        coords = coords,
-        gender = GetPlayerGender(),
-        street = GetStreetAndZone(coords),
-        alertTime = nil,
-        jobs = { 'police'}
-    }
+ ```lua
+    local function ParkingmeterRobbery()
+        local coords = GetEntityCoords(cache.ped)
+        local dispatchData = {
+            message = locale('parkinmeterrobbery'),
+            codeName = 'parkinmeterrobbery',
+            code = '10-10',
+            icon = 'fa-solid fa-square-parking',
+            priority = 2,
+            coords = coords,
+            gender = GetPlayerGender(),
+            street = GetStreetAndZone(coords),
+            alertTime = nil,
+            jobs = { 'police'}
+        }
 
-    TriggerServerEvent('ps-dispatch:server:notify', dispatchData)
-end
-exports('ParkingmeterRobbery', ParkingmeterRobbery)
+        TriggerServerEvent('ps-dispatch:server:notify', dispatchData)
+    end
+    exports('ParkingmeterRobbery', ParkingmeterRobbery)
+    ```
 
 2. Add the following code to your ps-dispatch/shared/config.lua/Config.Blips
-
+ ```lua
     ['atmrobbery'] = {
         radius = 0,
         sprite = 52,
@@ -67,7 +69,8 @@ exports('ParkingmeterRobbery', ParkingmeterRobbery)
         offset = false,
         flash = false
     },
-
+```
 3. Add the following code to your ps-dispatch/locales
-
+ ```lua
 "parkinmeterrobbery": "Parkingmeter Robbery",
+```
