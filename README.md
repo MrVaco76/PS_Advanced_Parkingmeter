@@ -33,9 +33,9 @@ All settings are customizable in the configuration files.
 - ox-inventory or qb-inventory custom inventory can be easily added
 
 ## For PS-Dispatch
-1. Add the following code to your ps-dispatch/client/alerts.lua
+1. Add the following code to your `ps-dispatch/client/alerts.lua`:
 
- ```lua
+    ```lua
     local function ParkingmeterRobbery()
         local coords = GetEntityCoords(cache.ped)
         local dispatchData = {
@@ -56,8 +56,9 @@ All settings are customizable in the configuration files.
     exports('ParkingmeterRobbery', ParkingmeterRobbery)
     ```
 
-2. Add the following code to your ps-dispatch/shared/config.lua/Config.Blips
- ```lua
+2. Add the following code to your `ps-dispatch/shared/config.lua/Config.Blips`:
+
+    ```lua
     ['atmrobbery'] = {
         radius = 0,
         sprite = 52,
@@ -69,8 +70,10 @@ All settings are customizable in the configuration files.
         offset = false,
         flash = false
     },
-```
-3. Add the following code to your ps-dispatch/locales
- ```lua
-"parkinmeterrobbery": "Parkingmeter Robbery",
-```
+    ```
+
+3. Add the following code to your `ps-dispatch/locales`:
+
+    ```lua
+    "parkinmeterrobbery": "Parkingmeter Robbery",
+    ```
