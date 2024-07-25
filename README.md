@@ -29,6 +29,8 @@ All settings are customizable in the configuration files.
 - ESX or QBCore
 - ox-lib
 - oxmysql
+- ox-target or qb-target
+- ox-inventory or qb-inventory custom inventory can be easily added
 
 ## For PS-Dispatch
 1. Add the following code to your ps-dispatch/client/alerts.lua
