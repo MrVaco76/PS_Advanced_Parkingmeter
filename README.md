@@ -5,7 +5,11 @@ Join our Discord for support and feature scripts: https://discord.gg/XQHVstYRGx
 
 
 ## What does it do exactly?
+With our script, you can purchase a parking ticket for street parking and choose the duration of your parking time. The police can verify if a vehicle has a valid parking ticket using the ox-target or qb-target.
 
+Additionally, it is possible to rob the parking meter using a preconfigured item. The required number of police officers can be specified. There is also a chance to notify the police via a dispatch system, with ps-dispatch and emergency-dispatch preconfigured.
+
+All settings are customizable in the configuration files.
 
 
 ## Installation instructions
