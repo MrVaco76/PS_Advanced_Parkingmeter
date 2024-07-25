@@ -11,6 +11,7 @@ Additionally, it is possible to rob the parking meter using a preconfigured item
 
 All settings are customizable in the configuration files.
 
+preview: https://youtu.be/AVL_6KCA2GM
 
 ## Installation instructions
 
