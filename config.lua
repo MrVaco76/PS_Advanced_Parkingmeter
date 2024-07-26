@@ -19,13 +19,13 @@ Config.Titel = "Parkingmeter system"
 --Your Discordweblink need to be placed in server/discord_weebhook.lua
 
 
-Config.MaxDistanceGetVehicles = 30 
-Config.MinParkingTime = 1
-Config.MaxParkingTime = 30
-Config.PricePerMinutes = 1
+Config.MaxDistanceGetVehicles = 30 -- Automatically get the vehicle plate based on the distance between the person and the cars
+Config.MinParkingTime = 1 -- The minimum parkingtime for a car
+Config.MaxParkingTime = 30 -- The maximum parkingtime for a car
+Config.PricePerMinutes = 1 -- Here you can add your price the person have to pay per minutes 
 
 
-Config.JobCanCheckParkingTime =  "police"
+Config.JobCanCheckParkingTime =  "police" -- The job to checke if the vehicle has a parking ticket
 
 
 
@@ -41,7 +41,7 @@ Config.BonesForTarget = { -- Bones for the targetsystem; currently on the car
       }
 	 
 	 
-Config.TargetPropModels = { 
+Config.TargetPropModels = { -- Props for the parkingmeter
 
     "prop_parknmeter_01",
     "prop_parknmeter_02",
@@ -49,16 +49,16 @@ Config.TargetPropModels = {
 
 
 --Robery setting
-Config.UseRobbery = true
-Config.MinPoliceCount = 1
-Config.UseDispatch = true 
-Config.ChanceToAlertPolice = 100
-Config.Dispatch = "emergencydispatch"  --ps-dispatch
-Config.GetRobMoney  = math.random(100, 225)
-Config.RobItem = "lockpick"
-Config.RemoveItem = true
-Config.RobParkingMeterDuration = 5000
-Config.RobParkingMeterProgressLabel = "Parking meter is being robbed!"
-Config.SkillCheck = false 
-Config.SkillcheckSettings = {'easy', 'easy', {areaSize = 60, speedMultiplier = 1}, 'easy'} 
-Config.TimeBeforeCanRobAgain = 5
+Config.UseRobbery = true -- Put this to true if you want to use the robbery system
+Config.MinPoliceCount = 1 -- Minimum police to start the robbery
+Config.UseDispatch = true  -- If you want to send a dispatch to the police
+Config.ChanceToAlertPolice = 100 -- The probability of sending a dispatch is 100%. Lower the number to decrease the chance.
+Config.Dispatch = "emergencydispatch"  --ps-dispatch or emergencydispatch you can add you own dispatch system in client_function.lua
+Config.GetRobMoney  = math.random(100, 225) -- How much money the get from the robbery
+Config.RobItem = "lockpick" -- Put here the item if wich they need to rob the parkingmeter
+Config.RemoveItem = true -- If you want that the item get removed put this to true
+Config.RobParkingMeterDuration = 5000 -- How long it takes to rob a parkingmeter 
+Config.RobParkingMeterProgressLabel = "Parking meter is being robbed!" -- Text from the progressbar
+Config.SkillCheck = false -- if you want a skillCheck for your robbery 
+Config.SkillcheckSettings = {'easy', 'easy', {areaSize = 60, speedMultiplier = 1}, 'easy'} -- edit here the difficulty of the skillcheck
+Config.TimeBeforeCanRobAgain = 5 -- Put here the time before the person can make a new robbery 5 = 5 minutes
