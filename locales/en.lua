@@ -22,6 +22,7 @@ translations.PrkingGood = "The car with the license plate %s has a parking ticke
 translations.NoParkingTicketForThisStreet = "The car with the license plate %s has no parking ticket for this street!"
 translations.NoParkingTicket = "The car with the license plate %s has no parking ticket!"
 translations.DataBaseError = "Something went wrong!"
+translations.NotEnoughMoney = "You don`t have enough money!"
 
 --Notify robbery
 translations.YouCanNotRobberAgain = "You still have to wait until you can do that again!"

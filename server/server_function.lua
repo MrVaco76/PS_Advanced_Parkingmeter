@@ -53,11 +53,38 @@ RegisterNetEvent('PS_Parking_meter_system:RemoveMoney', function(clientId, Licen
             local xPlayer = ESX.GetPlayerFromId(source)
             if xPlayer then
                 
-                local Money = tonumber(MoneyAmount)
-                xPlayer.removeAccountMoney(Config.MoneyType, money)
+				local PlayerMoney = xPlayer.getMoney()
+	            local Money = tonumber(MoneyAmount)
+				
+				if Config.MoneyType == "money" then 
+					if PlayerMoney < Money then 
+					local msg = string.format(translations.NotEnoughMoney, ParkDuration, MoneyAmount)
+					local type = "error"
+				
+					NotifyServer(source, msg, type)  
+				else 
+				
+				local msg = string.format(translations.ParkTicketBought, ParkDuration, MoneyAmount)
+				local type = "success"
+				
+				NotifyServer(source, msg, type)   
+
+                xPlayer.removeAccountMoney(Config.MoneyType, tonumber(Money))
 								
 				DiscordWebhook(16753920, Config.Titel, identifier.. " Bought a parkingticket \nFor: \nLicense Plate: "..LicensePlate.."\nParkduration: "..ParkDuration.." Minutes \nStreetname "..Streetname.."\nDate: "..parkingtime.."\n"..discord)
-         end
+				
+				end
+				elseif Config.MoneyType == "bank" then 
+				local msg = string.format(translations.ParkTicketBought, ParkDuration, MoneyAmount)
+				local type = "success"
+				
+				NotifyServer(source, msg, type)   
+
+                xPlayer.removeAccountMoney(Config.MoneyType, tonumber(Money))
+								
+				DiscordWebhook(16753920, Config.Titel, identifier.. " Bought a parkingticket \nFor: \nLicense Plate: "..LicensePlate.."\nParkduration: "..ParkDuration.." Minutes \nStreetname "..Streetname.."\nDate: "..parkingtime.."\n"..discord)
+				end	
+		 end
      end
 end)
 if Config.UseRobbery then
@@ -84,7 +111,7 @@ RegisterNetEvent('PS_Parking_meter_system:AddMoney', function(source, pos, ident
             local xPlayer = ESX.GetPlayerFromId(source)
             if xPlayer then
                 local Money = tonumber(MoneyAmount)
-                xPlayer.addAccountMoney(Config.MoneyType, Money)
+                xPlayer.addAccountMoney(Config.MoneyType, tonumber(Money))
                 
                 local msg = string.format(translations.RobedParkingMeter, MoneyAmount)
                 local type = "success"
@@ -154,8 +181,9 @@ end)
     lib.callback.register('PS_Parking_meter_system:HasItem', function(source, item)
 		local item = Config.RobItem
 		local itemCount 
-        local Player = QBCore.Functions.GetPlayer(source)
+       
 		if Config.Framework == "qb-core" and (Config.Inventory == "Old-QbInventory" or Config.Inventory == "New-QbInventory") then
+			local Player = QBCore.Functions.GetPlayer(source)
 			itemCount = Player.Functions.GetItemByName(item)
 		elseif (Config.Framework == "ESX" or Config.Framework == "qb-core") and Config.Inventory == "OX-Inventory" then
 			itemCount = exports.ox_inventory:GetItemCount(source, item, nil, true)
