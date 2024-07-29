@@ -4,10 +4,6 @@ local bones = Config.BonesForTarget
 
 local Jobs = Config.JobCanCheckParkingTime
 
-for _, job in ipairs(Jobs) do
-    print(job)
-end
-
 if Config.TargetSystem == "qb-target" then 
     exports["qb-target"]:AddTargetModel(
         models,  

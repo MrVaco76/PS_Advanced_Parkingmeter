@@ -64,7 +64,7 @@ end
         {type = 'time', label = translations.Time, default = true, format = 24, returnString = true, required = false, disabled = true},
     })
 
-    if ParkingMenu == nil then
+    if (ParkingMenu == nil) or (ParkingMenu[1] == translations.NoVehicleNearby)  then
         return nil
     else
         local LicensePlate = ParkingMenu[1]
