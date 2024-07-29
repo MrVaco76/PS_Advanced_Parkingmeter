@@ -3,7 +3,7 @@ game 'gta5'
 
 author 'Vaco'
 description 'PS_Parking meter_system'
-version '1.0.0'
+version '1.0.3'
 
 lua54 'yes'
 
