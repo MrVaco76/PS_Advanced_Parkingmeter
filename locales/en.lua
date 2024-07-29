@@ -23,6 +23,7 @@ translations.NoParkingTicketForThisStreet = "The car with the license plate %s h
 translations.NoParkingTicket = "The car with the license plate %s has no parking ticket!"
 translations.DataBaseError = "Something went wrong!"
 translations.NotEnoughMoney = "You don`t have enough money!"
+translations.HasAllreadTicket = "The vehicle with the license plate %s already has a ticket for the street %s."
 
 --Notify robbery
 translations.YouCanNotRobberAgain = "You still have to wait until you can do that again!"

@@ -28,8 +28,7 @@ function NotifyServer(source, msg, type)
 end
 
 
-RegisterNetEvent('PS_Parking_meter_system:RemoveMoney', function(clientId, LicensePlate, ParkDuration, Streetname, Date, Time)
-	local source = clientId
+RegisterNetEvent('PS_Parking_meter_system:RemoveMoney', function(source, LicensePlate, ParkDuration, Streetname, Date, Time)
     local identifierlist = ExtractIdentifiers(source)
     local discord = (identifierlist.discord and identifierlist.discord:gsub("old_pattern", "new_pattern")) or ""
 	local identifier = GetPlayerIdentifier(source)
@@ -129,7 +128,6 @@ end)
 
 RegisterNetEvent('PS_Parking_meter_system:RemoveItem', function(source, pos, identifier, date, time, expirationTime) 
 	local itemName = Config.RobItem
-	
     local Player
     local xPlayer
     if Config.Framework == "qb-core" then
@@ -148,7 +146,7 @@ RegisterNetEvent('PS_Parking_meter_system:RemoveItem', function(source, pos, ide
 			TriggerEvent('PS_Parking_meter_system:AddMoney', source, pos, identifier, date, time, expirationTime)
         elseif Config.Inventory == "OX-Inventory" then 
 			if Config.RemoveItem then 
-            exports.ox_inventory:RemoveItem(1, itemName, 1)
+            exports.ox_inventory:RemoveItem(source, itemName, 1)
 			end
 			itemRemoved = true
 			TriggerEvent('PS_Parking_meter_system:AddMoney', source, pos, identifier, date, time, expirationTime)
@@ -163,7 +161,7 @@ RegisterNetEvent('PS_Parking_meter_system:RemoveItem', function(source, pos, ide
         xPlayer = ESX.GetPlayerFromId(source)
         if Config.Inventory == "OX-Inventory" then 
 			if Config.RemoveItem then 
-            exports.ox_inventory:RemoveItem(1, itemName, 1)
+            exports.ox_inventory:RemoveItem(source, itemName, 1)
 			end
 			itemRemoved = true
 			TriggerEvent('PS_Parking_meter_system:AddMoney', source, pos, identifier, date, time, expirationTime)
@@ -177,23 +175,30 @@ RegisterNetEvent('PS_Parking_meter_system:RemoveItem', function(source, pos, ide
     end
 end)
 
-
+	if (Config.Framework == "ESX" or Config.Framework == "qb-core") and Config.Inventory == "OX-Inventory" then
     lib.callback.register('PS_Parking_meter_system:HasItem', function(source, item)
 		local item = Config.RobItem
-		local itemCount 
-       
-		if Config.Framework == "qb-core" and (Config.Inventory == "Old-QbInventory" or Config.Inventory == "New-QbInventory") then
-			local Player = QBCore.Functions.GetPlayer(source)
-			itemCount = Player.Functions.GetItemByName(item)
-		elseif (Config.Framework == "ESX" or Config.Framework == "qb-core") and Config.Inventory == "OX-Inventory" then
-			itemCount = exports.ox_inventory:GetItemCount(source, item, nil, true)
-		end
+		local itemCount = exports.ox_inventory:GetItemCount(source, item, nil, true) 
+
+        if itemCount > 0 then
+            return true
+        else
+            return false
+			end
+		end)
+	end
+
+	if Config.Framework == "qb-core" and (Config.Inventory == "Old-QbInventory" or Config.Inventory == "New-QbInventory") then
+    lib.callback.register('PS_Parking_meter_system:HasItem', function(source, item)
+		local item = Config.RobItem
+		local Player = QBCore.Functions.GetPlayer(source)
+		local itemCount = Player.Functions.GetItemByName(item) 
 
         if itemCount then
             return true
         else
             return false
-        end
-    end)
-
+			end
+		end)
+	end
 end

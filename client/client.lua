@@ -74,7 +74,7 @@ end
         local Time = ParkingMenu[5]
 
         TriggerServerEvent('PS_Parking_meter_system:InsertInDB',clientId, LicensePlate, ParkDuration, Streetname, Date, Time)
-        TriggerServerEvent('PS_Parking_meter_system:RemoveMoney',clientId, LicensePlate, ParkDuration, Streetname, Date, Time)
+        
 
         return LicensePlate
     end

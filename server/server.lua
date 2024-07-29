@@ -35,39 +35,83 @@ end)
   
 
 RegisterNetEvent('PS_Parking_meter_system:InsertInDB', function(source, LicensePlate, ParkDuration, Streetname, Date, Time)
-	local xPlayer = source
+    local xPlayer = source
     local seconds = math.floor(Time / 1000)
     local UTCTime = Config.UTCTime
-	
-    MySQL.Async.execute([[
-        INSERT INTO PS_ParkingMeter (licenseplate, parkduration, streetname, parkingdate, parkingtime, expiration_time)
-        VALUES (@licenseplate, @parkduration, @streetname, @parkingdate, 
-                DATE_ADD(FROM_UNIXTIME(@seconds), INTERVAL @UTCTime HOUR),
-                DATE_ADD(DATE_ADD(FROM_UNIXTIME(@seconds), INTERVAL @UTCTime HOUR), INTERVAL @parkduration MINUTE))
-        ON DUPLICATE KEY UPDATE
-            parkduration = VALUES(parkduration),
-            streetname = VALUES(streetname),
-            parkingdate = VALUES(parkingdate),
-            parkingtime = VALUES(parkingtime),
-            expiration_time = VALUES(expiration_time)
+
+    -- Prüfen, ob es ein Ticket für das Fahrzeug und die Straße gibt
+    MySQL.Async.fetchAll([[
+        SELECT * FROM PS_ParkingMeter
+        WHERE licenseplate = @licenseplate AND streetname = @streetname
     ]], {
         ['@licenseplate'] = LicensePlate,
-        ['@parkduration'] = ParkDuration,  
-        ['@streetname'] = Streetname,
-        ['@parkingdate'] = Date,
-        ['@seconds'] = seconds,
-        ['@UTCTime'] = UTCTime
-    }, function(rowsChanged)
-        if rowsChanged > 0 then
-            
+        ['@streetname'] = Streetname
+    }, function(result)
+        if #result > 0 then
+            local ticket = result[1]
+            local expirationTime = tonumber(ticket.expiration_time) / 1000
+            local currentTime = os.time()
+
+            if currentTime > expirationTime then
+                -- Ticket ist abgelaufen, Eintrag aktualisieren
+                MySQL.Async.execute([[
+                    UPDATE PS_ParkingMeter
+                    SET parkduration = @parkduration,
+                        parkingdate = @parkingdate,
+                        parkingtime = DATE_ADD(FROM_UNIXTIME(@seconds), INTERVAL @UTCTime HOUR),
+                        expiration_time = DATE_ADD(DATE_ADD(FROM_UNIXTIME(@seconds), INTERVAL @UTCTime HOUR), INTERVAL @parkduration MINUTE)
+                    WHERE licenseplate = @licenseplate AND streetname = @streetname
+                ]], {
+                    ['@licenseplate'] = LicensePlate,
+                    ['@streetname'] = Streetname,
+                    ['@parkduration'] = ParkDuration,
+                    ['@parkingdate'] = Date,
+                    ['@seconds'] = seconds,
+                    ['@UTCTime'] = UTCTime
+                }, function(rowsChanged)
+                    if rowsChanged > 0 then
+				TriggerEvent('PS_Parking_meter_system:RemoveMoney',source, LicensePlate, ParkDuration, Streetname, Date, Time)
+                    else
+                        local msg = translations.DataBaseError
+                        local type = "error"
+                        NotifyServer(xPlayer, msg, type)
+                    end
+                end)
+            else
+                -- Es gibt ein aktives Ticket für diese Straße
+                local msg = string.format(translations.HasAllreadTicket, LicensePlate, Streetname)
+                local type = "error"
+                NotifyServer(xPlayer, msg, type)
+            end
         else
-			local msg = translations.DataBaseError
-			local type = "error"
-			
-            NotifyServer(xPlayer, msg, type)
+            -- Kein Ticket vorhanden, neuen Eintrag erstellen
+            MySQL.Async.execute([[
+                INSERT INTO PS_ParkingMeter (licenseplate, streetname, parkduration, parkingdate, parkingtime, expiration_time)
+                VALUES (@licenseplate, @streetname, @parkduration, @parkingdate, 
+                        DATE_ADD(FROM_UNIXTIME(@seconds), INTERVAL @UTCTime HOUR),
+                        DATE_ADD(DATE_ADD(FROM_UNIXTIME(@seconds), INTERVAL @UTCTime HOUR), INTERVAL @parkduration MINUTE))
+            ]], {
+                ['@licenseplate'] = LicensePlate,
+                ['@streetname'] = Streetname,
+                ['@parkduration'] = ParkDuration,
+                ['@parkingdate'] = Date,
+                ['@seconds'] = seconds,
+                ['@UTCTime'] = UTCTime
+            }, function(rowsChanged)
+                if rowsChanged > 0 then
+				TriggerEvent('PS_Parking_meter_system:RemoveMoney',source, LicensePlate, ParkDuration, Streetname, Date, Time)
+                else
+                    local msg = translations.DataBaseError
+                    local type = "error"
+                    NotifyServer(xPlayer, msg, type)
+                end
+            end)
         end
     end)
 end)
+
+
+
 
 
 
@@ -76,45 +120,47 @@ end)
 
 
 RegisterNetEvent('PS_Parking_meter_system:GetDataFromDB', function(source, LicensePlate, streetName)
-
     MySQL.Async.fetchAll('SELECT * FROM PS_ParkingMeter WHERE licenseplate = @licenseplate', {
         ['@licenseplate'] = LicensePlate
     }, function(results)
         if #results > 0 then
+            local foundActiveTicket = false
+            local currentTime = os.time()  -- aktuelle Zeit in Sekunden seit 1970
+
             for _, row in ipairs(results) do
-
+                -- expiration_time als Unix-Zeitstempel in Millisekunden
                 local expirationTimeMillis = tonumber(row.expiration_time)
-                local expirationTimeSeconds = math.floor(expirationTimeMillis / 1000) 
-                local currentTime = os.time()
+                if expirationTimeMillis then
+                    local expirationTime = expirationTimeMillis / 1000  -- Konvertiere in Sekunden
 
-                if currentTime > expirationTimeSeconds then
-					local msg = string.format(translations.PrkingOvertime, LicensePlate )
-					local type = "error"
-					
-					NotifyServer(source, msg, type)
+                    if currentTime <= expirationTime then
+                        if streetName == row.streetname then
+                            foundActiveTicket = true
+                            local msg = string.format(translations.PrkingGood, LicensePlate)
+                            local type = "success"
+                            NotifyServer(source, msg, type)
+                            break
+                        end
+                    end
                 else
-				local dbStreeName = row.streetname
-				if streetName == dbStreeName then 
-					local msg = string.format(translations.PrkingGood, LicensePlate )
-					local type = "success"
-					
-					NotifyServer(source, msg, type)
-					else 
-					local msg = string.format(translations.NoParkingTicketForThisStreet, LicensePlate )
-					local type = "error"
-					
-					NotifyServer(source, msg, type)
-					end
                 end
             end
+
+            if not foundActiveTicket then
+                local msg = string.format(translations.NoParkingTicketForThisStreet, LicensePlate)
+                local type = "error"
+                NotifyServer(source, msg, type)
+            end
         else
-					local msg = string.format(translations.NoParkingTicket, LicensePlate )
-					local type = "error"
-					
-					NotifyServer(source, msg, type)
+            local msg = string.format(translations.NoParkingTicket, LicensePlate)
+            local type = "error"
+            NotifyServer(source, msg, type)
         end
     end)
 end)
+
+
+
 
 
 
@@ -211,7 +257,7 @@ RegisterNetEvent('PS_Parking_meter_system:RobberyInsertInDB', function(source, p
         ['@robbery_expiration_time'] = expirationTime
     }, function(rowsChanged)
         if rowsChanged > 0 then
-          TriggerEvent('PS_Parking_meter_system:RemoveItem',source, pos, identifier, date, time, expirationTime)  -- Erfolgshandlung hier, falls notwendig
+          TriggerEvent('PS_Parking_meter_system:RemoveItem',source, pos, identifier, date, time, expirationTime)  
         else
             local msg = translations.DataBaseError
             local type = "error"

@@ -24,8 +24,8 @@ Config.MinParkingTime = 1 -- The minimum parkingtime for a car
 Config.MaxParkingTime = 30 -- The maximum parkingtime for a car
 Config.PricePerMinutes = 1 -- Here you can add your price the person have to pay per minutes 
 
-
-Config.JobCanCheckParkingTime =  "police" -- The job to checke if the vehicle has a parking ticket
+Config.AllCanCheckVehicle = false --Enter 'false' here if only the jobs in JobCanCheckParkingTime are allowed to check the ticket.
+Config.JobCanCheckParkingTime =  {"ambulance", "mechanic", "police"} -- The job to checke if the vehicle has a parking ticket For qb-target it looks like this Config.JobCanCheckParkingTime = {["police"] = 0, ["sast"] = 0}
 
 
 
@@ -50,7 +50,7 @@ Config.TargetPropModels = { -- Props for the parkingmeter
 
 --Robery setting
 Config.UseRobbery = true -- Put this to true if you want to use the robbery system
-Config.MinPoliceCount = 1 -- Minimum police to start the robbery
+Config.MinPoliceCount = 0 -- Minimum police to start the robbery
 Config.UseDispatch = true  -- If you want to send a dispatch to the police
 Config.ChanceToAlertPolice = 100 -- The probability of sending a dispatch is 100%. Lower the number to decrease the chance.
 Config.Dispatch = "emergencydispatch"  --ps-dispatch or emergencydispatch you can add you own dispatch system in client_function.lua
@@ -61,4 +61,4 @@ Config.RobParkingMeterDuration = 5000 -- How long it takes to rob a parkingmeter
 Config.RobParkingMeterProgressLabel = "Parking meter is being robbed!" -- Text from the progressbar
 Config.SkillCheck = false -- if you want a skillCheck for your robbery 
 Config.SkillcheckSettings = {'easy', 'easy', {areaSize = 60, speedMultiplier = 1}, 'easy'} -- edit here the difficulty of the skillcheck
-Config.TimeBeforeCanRobAgain = 5 -- Put here the time before the person can make a new robbery 5 = 5 minutes
+Config.TimeBeforeCanRobAgain = 1 -- Put here the time before the person can make a new robbery 5 = 5 minutes

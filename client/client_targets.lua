@@ -2,7 +2,11 @@ local models = Config.TargetPropModels
 
 local bones = Config.BonesForTarget
 
+local Jobs = Config.JobCanCheckParkingTime
 
+for _, job in ipairs(Jobs) do
+    print(job)
+end
 
 if Config.TargetSystem == "qb-target" then 
     exports["qb-target"]:AddTargetModel(
@@ -38,6 +42,7 @@ if Config.TargetSystem == "qb-target" then
     )
 
 end
+if Config.AllCanCheckVehicle then 
       exports['qb-target']:AddTargetBone(bones, { 
         options = { 
           { 
@@ -45,12 +50,26 @@ end
             event = "PS_Parking_meter_system:CheckParkingTime", 
             icon = 'fa-solid fa-square-parking', 
             label = translations.TargetLabelCheckParkingTime, 
-			job = Config.JobCanCheckParkingTime,
             
           }
         },
         distance = Config.TargetDistance,
       })
+elseif not Config.AllCanCheckVehicle then 
+      exports['qb-target']:AddTargetBone(bones, { 
+        options = { 
+          { 
+            type = "client", 
+            event = "PS_Parking_meter_system:CheckParkingTime", 
+            icon = 'fa-solid fa-square-parking', 
+            label = translations.TargetLabelCheckParkingTime, 
+			job = Jobs,
+            
+          }
+        },
+        distance = Config.TargetDistance,
+      })
+	 end
 	
 elseif Config.TargetSystem == "ox-target" then 
 
@@ -82,6 +101,20 @@ exports.ox_target:addModel(
     }
 )
 end
+if Config.AllCanCheckVehicle then 
+exports.ox_target:addGlobalVehicle(
+    { 
+        {
+            drawSprite = true,
+            distance = 2.5,
+            event = 'PS_Parking_meter_system:CheckParkingTime',   
+            icon = "fa-solid fa-square-parking",              
+            label = translations.TargetLabelCheckParkingTime,                 
+            debug = Config.Debug 
+        }
+    }
+)
+elseif not Config.AllCanCheckVehicle then 
 exports.ox_target:addGlobalVehicle(
     { 
         {
@@ -90,9 +123,11 @@ exports.ox_target:addGlobalVehicle(
             event = 'PS_Parking_meter_system:CheckParkingTime',   
             icon = "fa-solid fa-square-parking",              
             label = translations.TargetLabelCheckParkingTime,  
-            groups = Config.JobCanCheckParkingTime,                
+            groups = Jobs,                
             debug = Config.Debug 
         }
     }
 )
+end
+
 end
