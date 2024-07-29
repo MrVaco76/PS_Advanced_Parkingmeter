@@ -49,7 +49,7 @@ preview: https://youtu.be/AVL_6KCA2GM
             gender = GetPlayerGender(),
             street = GetStreetAndZone(coords),
             alertTime = nil,
-            jobs = { 'police'}
+            jobs = { 'leo'}
         }
 
         TriggerServerEvent('ps-dispatch:server:notify', dispatchData)
