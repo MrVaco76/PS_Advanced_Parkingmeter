@@ -32,16 +32,38 @@ function CustomProgressbar(progressName, progressDuration, progressLabel, progre
 end 
 
 if Config.UseRobbery then
-RegisterNetEvent('PS_Parking_meter_system:AlertPolice', function() 
-    if Config.UseDispatch then
-	if math.random(1, 100) <= Config.ChanceToAlertPolice then
-        if Config.Dispatch == "emergencydispatch" then
-			TriggerEvent('emergencydispatch:emergencycall:new', "police", "A parking meter was robbed", false)
-        elseif Config.Dispatch == "ps-dispatch" then
-           exports["ps-dispatch"]:ParkingmeterRobbery() 
-			end
-		end
-	end
-end)
+    RegisterNetEvent('PS_Parking_meter_system:AlertPolice', function(coords) 
+        local clientId = GetPlayerServerId(PlayerId())
+        if Config.UseDispatch then
+            if math.random(1, 100) <= Config.ChanceToAlertPolice then
+                if Config.Dispatch == "emergencydispatch" then
+                    TriggerServerEvent('PS_Parking_meter_system:AlertPoliceServer', coords)
+                elseif Config.Dispatch == "ps-dispatch" then
+                    exports["ps-dispatch"]:ParkingmeterRobbery()
+                elseif Config.Dispatch == "qs-dispatch" then
+                    exports['qs-dispatch']:ToggleDuty(true)
+                    local playerInfo = exports['qs-dispatch']:GetPlayerInfo()
+                    local title = "10-60 - Parking Meter Robbery"
+                    local message = "A Parking Meter is being robbed"
 
+                    TriggerServerEvent('qs-dispatch:server:CreateDispatchCall', {
+                        job = { 'police' },
+                        callLocation = playerInfo.coords,
+                        callCode = { code = 'Parking Meter Robbery', snippet = '10-60' },
+                        message = message,
+                        flashes = false,
+                        image = nil,
+                        blip = {
+                            sprite = 488,
+                            scale = 0.8,
+                            colour = 1,
+                            flashes = true,
+                            text = 'Parking Meter Robbery',
+                            time = (10 * 60 * 1000),
+                        }
+                    })
+                end
+            end
+        end
+    end)
 end

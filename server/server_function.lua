@@ -150,9 +150,15 @@ RegisterNetEvent('PS_Parking_meter_system:RemoveItem', function(source, pos, ide
 			end
 			itemRemoved = true
 			TriggerEvent('PS_Parking_meter_system:AddMoney', source, pos, identifier, date, time, expirationTime)
+        elseif Config.Inventory == "qs-inventory" then 
+			if Config.RemoveItem then 
+            exports['qs-inventory']:RemoveItem(source, itemName, 1)
+			end
+			itemRemoved = true
+			TriggerEvent('PS_Parking_meter_system:AddMoney', source, pos, identifier, date, time, expirationTime)
         elseif Config.Inventory == "custom" then 
 			if Config.RemoveItem then 
-            -- Add here your remove item from your inventory
+                 -- Add here your remove item from your inventory
 			end
 			itemRemoved = true
 			TriggerEvent('PS_Parking_meter_system:AddMoney', source, pos, identifier, date, time, expirationTime)
@@ -162,6 +168,12 @@ RegisterNetEvent('PS_Parking_meter_system:RemoveItem', function(source, pos, ide
         if Config.Inventory == "OX-Inventory" then 
 			if Config.RemoveItem then 
             exports.ox_inventory:RemoveItem(source, itemName, 1)
+			end
+			itemRemoved = true
+			TriggerEvent('PS_Parking_meter_system:AddMoney', source, pos, identifier, date, time, expirationTime)
+       elseif Config.Inventory == "qs-inventory" then 
+        if Config.RemoveItem then 
+            exports['qs-inventory']:RemoveItem(source, itemName, 1)-- Add here your remove item from your inventory
 			end
 			itemRemoved = true
 			TriggerEvent('PS_Parking_meter_system:AddMoney', source, pos, identifier, date, time, expirationTime)
@@ -201,4 +213,24 @@ end)
 			end
 		end)
 	end
-end
+
+
+if (Config.Framework == "ESX" or Config.Framework == "qb-core") and Config.Inventory == "qs-inventory" then 
+    lib.callback.register('PS_Parking_meter_system:HasItem', function(source, item) 
+        local item = Config.RobItem
+        local itemCount = exports['qs-inventory']:GetItemTotalAmount(source, item)
+
+        if itemCount > 0 then
+            return true
+        else
+            return false
+            end
+        end)
+    end
+end 
+
+
+RegisterNetEvent('PS_Parking_meter_system:AlertPoliceServer', function(coords) 
+
+    TriggerEvent('emergencydispatch:emergencycall:new', "police", "A parking meter was robbed", coords, true)
+end)

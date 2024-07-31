@@ -228,6 +228,8 @@ function RobberySkillcheck(pos, identifier)
     local SkillCheck = false
 	local clientId = GetPlayerServerId(PlayerId())
     local success
+    local ped = PlayerPedId()
+    local coords = GetEntityCoords(ped)
 
     if Config.SkillCheck then 
         success = lib.skillCheck(Config.SkillcheckSettings,{'w', 'a', 's', 'd'})
@@ -237,7 +239,7 @@ function RobberySkillcheck(pos, identifier)
 
     if success then 
         TriggerServerEvent('PS_Parking_meter_system:RobberyInsertInDB',clientId, pos, identifier)
-		TriggerEvent('PS_Parking_meter_system:AlertPolice')
+		TriggerEvent('PS_Parking_meter_system:AlertPolice', coords)
     end
 end
 

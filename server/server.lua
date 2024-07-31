@@ -39,7 +39,10 @@ RegisterNetEvent('PS_Parking_meter_system:InsertInDB', function(source, LicenseP
     local seconds = math.floor(Time / 1000)
     local UTCTime = Config.UTCTime
 
-    -- Prüfen, ob es ein Ticket für das Fahrzeug und die Straße gibt
+    local currentTime = os.time()
+    local newExpirationTime = currentTime + (ParkDuration * 60) 
+
+
     MySQL.Async.fetchAll([[
         SELECT * FROM PS_ParkingMeter
         WHERE licenseplate = @licenseplate AND streetname = @streetname
@@ -49,17 +52,15 @@ RegisterNetEvent('PS_Parking_meter_system:InsertInDB', function(source, LicenseP
     }, function(result)
         if #result > 0 then
             local ticket = result[1]
-            local expirationTime = tonumber(ticket.expiration_time) / 1000
-            local currentTime = os.time()
+            local currentExpirationTime = tonumber(ticket.expiration_time) / 1000
 
-            if currentTime > expirationTime then
-                -- Ticket ist abgelaufen, Eintrag aktualisieren
+            if newExpirationTime > currentExpirationTime then
                 MySQL.Async.execute([[
                     UPDATE PS_ParkingMeter
                     SET parkduration = @parkduration,
                         parkingdate = @parkingdate,
                         parkingtime = DATE_ADD(FROM_UNIXTIME(@seconds), INTERVAL @UTCTime HOUR),
-                        expiration_time = DATE_ADD(DATE_ADD(FROM_UNIXTIME(@seconds), INTERVAL @UTCTime HOUR), INTERVAL @parkduration MINUTE)
+                        expiration_time = FROM_UNIXTIME(@newExpirationTime)
                     WHERE licenseplate = @licenseplate AND streetname = @streetname
                 ]], {
                     ['@licenseplate'] = LicensePlate,
@@ -67,10 +68,11 @@ RegisterNetEvent('PS_Parking_meter_system:InsertInDB', function(source, LicenseP
                     ['@parkduration'] = ParkDuration,
                     ['@parkingdate'] = Date,
                     ['@seconds'] = seconds,
-                    ['@UTCTime'] = UTCTime
+                    ['@UTCTime'] = UTCTime,
+                    ['@newExpirationTime'] = newExpirationTime
                 }, function(rowsChanged)
                     if rowsChanged > 0 then
-				TriggerEvent('PS_Parking_meter_system:RemoveMoney',source, LicensePlate, ParkDuration, Streetname, Date, Time)
+                        TriggerEvent('PS_Parking_meter_system:RemoveMoney', source, LicensePlate, ParkDuration, Streetname, Date, Time)
                     else
                         local msg = translations.DataBaseError
                         local type = "error"
@@ -78,28 +80,27 @@ RegisterNetEvent('PS_Parking_meter_system:InsertInDB', function(source, LicenseP
                     end
                 end)
             else
-                -- Es gibt ein aktives Ticket für diese Straße
                 local msg = string.format(translations.HasAllreadTicket, LicensePlate, Streetname)
                 local type = "error"
                 NotifyServer(xPlayer, msg, type)
             end
         else
-            -- Kein Ticket vorhanden, neuen Eintrag erstellen
             MySQL.Async.execute([[
                 INSERT INTO PS_ParkingMeter (licenseplate, streetname, parkduration, parkingdate, parkingtime, expiration_time)
                 VALUES (@licenseplate, @streetname, @parkduration, @parkingdate, 
                         DATE_ADD(FROM_UNIXTIME(@seconds), INTERVAL @UTCTime HOUR),
-                        DATE_ADD(DATE_ADD(FROM_UNIXTIME(@seconds), INTERVAL @UTCTime HOUR), INTERVAL @parkduration MINUTE))
+                        FROM_UNIXTIME(@newExpirationTime))
             ]], {
                 ['@licenseplate'] = LicensePlate,
                 ['@streetname'] = Streetname,
                 ['@parkduration'] = ParkDuration,
                 ['@parkingdate'] = Date,
                 ['@seconds'] = seconds,
-                ['@UTCTime'] = UTCTime
+                ['@UTCTime'] = UTCTime,
+                ['@newExpirationTime'] = newExpirationTime
             }, function(rowsChanged)
                 if rowsChanged > 0 then
-				TriggerEvent('PS_Parking_meter_system:RemoveMoney',source, LicensePlate, ParkDuration, Streetname, Date, Time)
+                    TriggerEvent('PS_Parking_meter_system:RemoveMoney', source, LicensePlate, ParkDuration, Streetname, Date, Time)
                 else
                     local msg = translations.DataBaseError
                     local type = "error"
@@ -119,19 +120,21 @@ end)
 
 
 
+
+
 RegisterNetEvent('PS_Parking_meter_system:GetDataFromDB', function(source, LicensePlate, streetName)
     MySQL.Async.fetchAll('SELECT * FROM PS_ParkingMeter WHERE licenseplate = @licenseplate', {
         ['@licenseplate'] = LicensePlate
     }, function(results)
         if #results > 0 then
             local foundActiveTicket = false
-            local currentTime = os.time()  -- aktuelle Zeit in Sekunden seit 1970
+            local currentTime = os.time()  
 
             for _, row in ipairs(results) do
-                -- expiration_time als Unix-Zeitstempel in Millisekunden
+
                 local expirationTimeMillis = tonumber(row.expiration_time)
                 if expirationTimeMillis then
-                    local expirationTime = expirationTimeMillis / 1000  -- Konvertiere in Sekunden
+                    local expirationTime = expirationTimeMillis / 1000 
 
                     if currentTime <= expirationTime then
                         if streetName == row.streetname then
@@ -168,10 +171,9 @@ end)
 
 RegisterNetEvent('PS_Parking_meter_system:DeleteOldContent')
 AddEventHandler('PS_Parking_meter_system:DeleteOldContent', function()
-    -- Berechne die aktuelle Zeit in Sekunden
+
     local currentTime = os.time()
     
-    -- Löschen aller Einträge in PS_ParkingMeter, deren Ablaufdatum überschritten ist
     MySQL.Async.execute('DELETE FROM PS_ParkingMeter WHERE expiration_time < FROM_UNIXTIME(@currentTime)', {
         ['@currentTime'] = currentTime
     }, function(affectedRows)
@@ -180,7 +182,6 @@ AddEventHandler('PS_Parking_meter_system:DeleteOldContent', function()
         end
     end)
     if Config.UseRobbery then
-    -- Löschen aller Einträge in PS_ParkingMeter_robbery, deren Ablaufdatum überschritten ist
     MySQL.Async.execute('DELETE FROM PS_ParkingMeter_robbery WHERE robbery_expiration_time < FROM_UNIXTIME(@currentTime)', {
         ['@currentTime'] = currentTime
     }, function(affectedRows)
