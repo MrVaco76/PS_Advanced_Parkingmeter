@@ -33,6 +33,19 @@ end
 
 if Config.UseRobbery then
     RegisterNetEvent('PS_Parking_meter_system:AlertPolice', function(coords) 
+        
+        if Config.Dispatch == "codem-dispatch" then 
+        local Text = 'A Parking Meter is being robbed'
+        local Type = 'Robbery'
+        
+        local Data = {
+            type = Type,
+            header = 'Robbery in progress',
+            text = Text,
+            code = Config.DispatchTypes['Robbery'].code,
+        }
+    end 
+
         local clientId = GetPlayerServerId(PlayerId())
         if Config.UseDispatch then
             if math.random(1, 100) <= Config.ChanceToAlertPolice then
@@ -40,6 +53,8 @@ if Config.UseRobbery then
                     TriggerServerEvent('PS_Parking_meter_system:AlertPoliceServer', coords)
                 elseif Config.Dispatch == "ps-dispatch" then
                     exports["ps-dispatch"]:ParkingmeterRobbery()
+                elseif Config.Dispatch == "codem-dispatch" then 
+                    exports['codem-dispatch']:CustomDispatch(Data)
                 elseif Config.Dispatch == "qs-dispatch" then
                     exports['qs-dispatch']:ToggleDuty(true)
                     local playerInfo = exports['qs-dispatch']:GetPlayerInfo()

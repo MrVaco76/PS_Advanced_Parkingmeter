@@ -115,31 +115,25 @@ end)
 
 
 
-
-
-
-
-
-
-
 RegisterNetEvent('PS_Parking_meter_system:GetDataFromDB', function(source, LicensePlate, streetName)
     MySQL.Async.fetchAll('SELECT * FROM PS_ParkingMeter WHERE licenseplate = @licenseplate', {
         ['@licenseplate'] = LicensePlate
     }, function(results)
         if #results > 0 then
             local foundActiveTicket = false
-            local currentTime = os.time()  
+            local currentTime = os.time()
 
             for _, row in ipairs(results) do
 
                 local expirationTimeMillis = tonumber(row.expiration_time)
                 if expirationTimeMillis then
-                    local expirationTime = expirationTimeMillis / 1000 
+                    local expirationTime = expirationTimeMillis / 1000
 
                     if currentTime <= expirationTime then
                         if streetName == row.streetname then
                             foundActiveTicket = true
-                            local msg = string.format(translations.PrkingGood, LicensePlate)
+                            local expirationDateTime = os.date("%Y-%m-%d %H:%M:%S", expirationTime)
+                            local msg = string.format(translations.PrkingGood, LicensePlate, expirationDateTime)
                             local type = "success"
                             NotifyServer(source, msg, type)
                             break
@@ -161,6 +155,7 @@ RegisterNetEvent('PS_Parking_meter_system:GetDataFromDB', function(source, Licen
         end
     end)
 end)
+
 
 
 
