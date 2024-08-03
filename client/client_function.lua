@@ -42,7 +42,7 @@ if Config.UseRobbery then
             type = Type,
             header = 'Robbery in progress',
             text = Text,
-            code = Config.DispatchTypes['Robbery'].code,
+            code =  '10-51',
         }
     end 
 
