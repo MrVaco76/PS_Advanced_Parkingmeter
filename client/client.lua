@@ -106,23 +106,34 @@ end)
 
 
 if Config.UseRobbery then 
-RegisterNetEvent('PS_Parking_meter_system:PoliceCheckResult', function()
-local minPoliceCount = Config.MinPoliceCount
-local clientId = GetPlayerServerId(PlayerId())
-TriggerServerEvent('CheckPoliceCount', clientId, minPoliceCount)
+    RegisterNetEvent('PS_Parking_meter_system:PoliceCheckResult', function()
+        local xPlayer = PlayerPedId()
+        local minPoliceCount = Config.MinPoliceCount
+        local clientId = GetPlayerServerId(PlayerId())
+        
+        if IsPedInAnyVehicle(xPlayer, false) then
+            local msg = translations.NotDoInCar
+            local type = "error"
 
-end)
+            Notify(msg, type)
+        else
+            TriggerServerEvent('CheckPoliceCount', clientId, minPoliceCount)
+        end
+    end)
 
 
 RegisterNetEvent('PS_Parking_meter_system:RobParkingMeter', function()
     local xPlayer = PlayerPedId()
 	local clientId = GetPlayerServerId(PlayerId())
     local pos = GetEntityCoords(xPlayer)
-
+    print("test1")
 	
     lib.callback('PS_Parking_meter_system:HasItem', false, function(hasItem)
+        print("test2")
 		if hasItem then 
+            print("test3")
 			TriggerServerEvent('PS_Parking_meter_system:Robbery_GetDataFromDB',clientId, pos)
+            print("test4")
 			else 
 			local msg = translations.NoItemToRob
 			local type = "error"

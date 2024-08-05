@@ -1,7 +1,7 @@
 Config = {}
 Config.Debug = false
 Config.Framework = "qb-core"  -- Specify your framework, e.g., ESX or qb-core
-Config.locales = "en"  -- Specify your language (en/pt/de/fr)
+Config.locales = "en"  -- Specify your language (en/pt/de/fr/nl)
 Config.Inventory = "Old-QbInventory"  -- Choose your inventory system: New-QbInventory, Old-QbInventory, OX-Inventory, qs-inventory or custom
 Config.MoneyType = "bank"  -- Specify whether the seller receives money as bank or cash (for ESX, specify 'money' if required)
 Config.TargetSystem = "qb-target" --ox-target or qb-target

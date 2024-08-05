@@ -30,8 +30,10 @@ if Config.locales == "en" then
 	translations.NoItemToRob = "You don't have the required item!"
 	translations.NotEnoughPolice = "There aren't enough police officers!"
 	translations.RobedParkingMeter = "You have robbed the parkingmeter and got %s€!"
+    translations.NotDoInCar = "You can't do this in the vehicle!"
 
 elseif Config.locales == "de" then
+    
     --Target
     translations.GetParkingTicket = "Ticket kaufen"
     translations.RobParkingMeter = "Parkuhr ausrauben"
@@ -61,8 +63,10 @@ elseif Config.locales == "de" then
     translations.NoItemToRob = "Sie haben den erforderlichen Gegenstand nicht!"
     translations.NotEnoughPolice = "Es sind nicht genug Polizisten da!"
     translations.RobedParkingMeter = "Sie haben die Parkuhr ausgeraubt und %s€ erhalten!"
+    translations.NotDoInCar = "Du kannst das im Fahrzeug nicht machen!"
 	
 elseif Config.locales == "pt" then
+
     --Target
     translations.GetParkingTicket = "Pagar Estacionamento"
     translations.RobParkingMeter = "Roubar Parquímetro"
@@ -92,6 +96,7 @@ elseif Config.locales == "pt" then
     translations.NoItemToRob = "Não tens o item necessário!"
     translations.NotEnoughPolice = "Não há polícias suficientes!"
     translations.RobedParkingMeter = "Assaltaste o parquímetro e obtiveste %s€!"
+    translations.NotDoInCar = "Você não pode fazer isso no veículo!"
 
 elseif Config.locales == "fr" then
 
@@ -123,6 +128,39 @@ elseif Config.locales == "fr" then
     translations.NoItemToRob = "Vous n’avez pas l’article requis!"
     translations.NotEnoughPolice = "Il n’y a pas assez de policiers!"
     translations.RobedParkingMeter = "Vous avez volé le parcmètre et obtenu %s€!"
+    translations.NotDoInCar = "Vous ne pouvez pas faire ça dans le véhicule!"
+
+elseif Config.locales == "nl" then
+
+    translations.GetParkingTicket = "Ticket Krijgen"
+    translations.RobParkingMeter = "Parkeerautomaat Beroven"
+    translations.TargetLabelCheckParkingTime = "Parkeerticket Controleren"
+
+    --Input Menu
+    translations.ParkinMeterMenuTitel = "Parkeerautomaat"
+    translations.LicensePlate = "Kenteken:"
+    translations.DurationParkingTime = "Parkeerduur (min):"
+    translations.StreetName = "Straatnaam:"
+    translations.Date = "Datum:"
+    translations.Time = "Tijd:"
+    translations.NoVehicleNearby = "Geen voertuigen in de buurt!"
+
+    --Notify 
+    translations.ParkTicketBought = "Je hebt een parkeerticket gekocht voor %s minuten, je hebt betaald! %s€"
+    translations.PrkingOvertime = "De parkeertijd is overschreden voor %s!"
+    translations.PrkingGood = "De auto met het kenteken %s heeft een parkeerticket voor deze straat! Tot: %s"
+    translations.NoParkingTicketForThisStreet = "De auto met het kenteken %s heeft geen parkeerticket voor deze straat!"
+    translations.NoParkingTicket = "De auto met het kenteken %s heeft geen parkeerticket!"
+    translations.DataBaseError = "Er is iets misgegaan!"
+    translations.NotEnoughMoney = "Je hebt niet genoeg geld!"
+    translations.HasAllreadTicket = "Het voertuig met het kenteken %s heeft al een ticket voor de straat %s."
+
+    --Notify robbery
+    translations.YouCanNotRobberAgain = "Je moet nog wachten voordat je dat weer kunt doen!"
+    translations.NoItemToRob = "Je hebt het vereiste item niet!"
+    translations.NotEnoughPolice = "Er zijn niet genoeg politieagenten!"
+    translations.RobedParkingMeter = "Je hebt de parkeerautomaat beroofd en %s€ gekregen!"
+    translations.NotDoInCar = "Dit kan niet in de auto!"
 
 
 end 
