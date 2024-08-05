@@ -25,11 +25,7 @@ AddEventHandler('onResourceStart', function(resourceName)
 	end
   end)
   
-  RegisterCommand("delpark", function(source, args, rawCommand)
-
-    TriggerEvent('PS_Parking_meter_system:DeleteOldContent')
-
-end)
+ 
 
   
   
@@ -191,7 +187,7 @@ end)
 
 RegisterNetEvent('PS_Parking_meter_system:Robbery_GetDataFromDB', function(source, pos)
     local identifier
-
+    
     if Config.Framework == "qb-core" then 
         identifier = GetPlayerIdentifier(source)
     elseif Config.Framework == "ESX" then 

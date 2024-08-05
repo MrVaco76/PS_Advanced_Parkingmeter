@@ -15,15 +15,6 @@ end
 
 
 
-RegisterCommand("park", function(source, args, rawCommand)
-
-    TriggerEvent('PS_Parking_meter_system:RobParkingMeter')
-
-end)
-
-
-
-
 RegisterNetEvent('PS_Parking_meter_system:OpenMenu', function()
     local xPlayer = PlayerPedId()
 	local clientId = GetPlayerServerId(PlayerId())
